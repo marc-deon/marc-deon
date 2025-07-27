@@ -22,6 +22,12 @@ _folderMode = None
 INSTALL_FOLDER = '/home/maqo/amine-bot/'
 SHANA_FOLDER = '/home/maqo/mercury/media/downloads/ShanaProject/'
 
+# Move certain shows to Watched directory immediately, because they're being handled by Kodi
+def quick_move():
+    titles = ['yofukashi', 'ame to',]
+    for title in titles:
+        r = subprocess.run([INSTALL_FOLDER + "movetowatched.pl", title, '-1'])
+    r = subprocess.run([INSTALL_FOLDER + "anishuffle.pl"])
 
 async def send_message(msg, channel_id=default_channel_id):
     c = client.get_channel(channel_id)
@@ -55,8 +61,10 @@ async def get_and_process_history(channel_id=default_channel_id):
         else:
             # sometimes humans are dumb
             if m.content.startswith("!watch "):
-                m.content.replace("!watch", "!watched")
+                print ("lazy >:(")
+                m.content = m.content.replace("!watch", "!watched")
             if m.content.startswith("!watched"):
+                print ("Watched detected")
                 regex = re.search(r"!watched(.*?)(\d+)", m.content, re.IGNORECASE)
                 title = regex.group(1).strip()
                 episode = regex.group(2).strip()
@@ -76,6 +84,7 @@ async def get_and_process_history(channel_id=default_channel_id):
     if message:
         shows = get_shows()
         for show in shows:
+            #show = '\t'.join(show.split('\t')[::-1])
             text += "\n" + show
 
         await message.edit(content = text)
@@ -90,7 +99,10 @@ async def on_ready():
     print(f"We have logged in as {client.user}")
 
     if _folderMode:
+        quick_move()
         await get_and_process_history()
+        #r = subprocess.run([INSTALL_FOLDER + "anishuffle.pl"])
+
     else:
         print(len(_messages), "message")
         for m in _messages:

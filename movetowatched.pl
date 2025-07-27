@@ -29,10 +29,12 @@ for (readdir($dir)) {
 	$_ =~ /\[.*\] (.*?) - (\d{1,3}).*/i;
 	my $title = $1;
 	my $ep = $2;
-	print "Found file [$title] [$episode]\n";
+	print "Found file [$title] [$ep]\n";
 
 	next unless $title   =~ /$show/i;
-	next unless $ep      =~ /$episode/;
+	if ($episode !~ '-1') {
+		next unless $ep      =~ /$episode/;
+	}
 	unshift @filenames, $_;
 }
 
