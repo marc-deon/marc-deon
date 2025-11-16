@@ -22,6 +22,7 @@ _folderMode = None
 INSTALL_FOLDER = '/home/maqo/amine-bot/'
 SHANA_FOLDER = '/home/maqo/mercury/media/downloads/ShanaProject/'
 
+
 # Move certain shows to Watched directory immediately, because they're being handled by Kodi
 def quick_move():
     #titles = ['yofukashi', 'ame to', 'takopii', 'food court', 'zatsu', 'witch']
@@ -74,11 +75,13 @@ async def get_and_process_history(channel_id=default_channel_id):
                 m.content = m.content.replace("!watch", "!watched")
             if m.content.startswith("!watched"):
                 print ("Watched detected")
-                regex = re.search(r"!watched(.*?)(\d+)", m.content, re.IGNORECASE)
+                regex = re.search(r"!watched(.*?)(.+)", m.content, re.IGNORECASE)
                 title = regex.group(1).strip()
                 episode = regex.group(2).strip()
                 if len(episode) == 1:
-                    episode = '0' + episode 
+                    episode = '0' + episode
+                if episode == '00':
+                    episode = 'next'
                 print (f"Marking [{title}] [{episode}] as watched")
                 r = subprocess.run([INSTALL_FOLDER + "movetowatched.pl", title, episode])
                 print ("Run result", r)

@@ -19,17 +19,35 @@ my $season ||= 1;
 
 print "Target is $show $episode\n";
 
-
 # Find matching filenames
 my @filenames;
 my $dir;
 opendir($dir, $UNWATCHED) || die "Can't open directory [$UNWATCHED]!\n";
 
+if ($episode eq 'next') {
+	my @numbers;
+
+	# Get list of episode numbers for title
+	for (readdir($dir)) {
+		$_ =~ /(\[.*\] )?(.*?) - (\d{1,3}).*/i;
+		my $title = $2;
+		my $ep = $3;
+
+		next unless $title   =~ /$show/i;
+		unshift @numbers, $ep;
+	}
+
+	# Sort and pick first
+	@numbers = sort @numbers;
+	$ep = shift @numbers;
+	exit unless ($ep);
+}
+
+
 for (readdir($dir)) {
-	$_ =~ /\[.*\] (.*?) - (\d{1,3}).*/i;
-	my $title = $1;
-	my $ep = $2;
-	print "Found file [$title] [$ep]\n";
+	$_ =~ /(\[.*\] )?(.*?) - (\d{1,3}).*/i;
+	my $title = $2;
+	my $ep = $3;
 
 	next unless $title   =~ /$show/i;
 	if ($episode !~ '-1') {
