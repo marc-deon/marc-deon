@@ -24,7 +24,8 @@ SHANA_FOLDER = '/home/maqo/mercury/media/downloads/ShanaProject/'
 
 # Move certain shows to Watched directory immediately, because they're being handled by Kodi
 def quick_move():
-    titles = ['yofukashi', 'ame to',]
+    #titles = ['yofukashi', 'ame to', 'takopii', 'food court', 'zatsu', 'witch']
+    titles = []
     for title in titles:
         r = subprocess.run([INSTALL_FOLDER + "movetowatched.pl", title, '-1'])
     r = subprocess.run([INSTALL_FOLDER + "anishuffle.pl"])
@@ -41,9 +42,17 @@ def get_shows() -> list[str]:
     shows = []
 
     for file in files:
-        results = re.search(r'\[.*\] (.*?) - (\d{1,3}).*', file)
-        name = results.group(1)
-        episode = int(results.group(2))
+        if file.startswith('.'):
+            continue
+
+        results = re.search(r'(\[.*\] )?(.*?) - (\d{1,3}).*', file)
+        
+        if not results:
+            print ("Regex failed")
+            continue
+        
+        name = results.group(2)
+        episode = int(results.group(3))
         print(f"{name} E{episode:02d}")
         shows.append(f"{name}\tE{episode:02d}")
 
@@ -68,6 +77,8 @@ async def get_and_process_history(channel_id=default_channel_id):
                 regex = re.search(r"!watched(.*?)(\d+)", m.content, re.IGNORECASE)
                 title = regex.group(1).strip()
                 episode = regex.group(2).strip()
+                if len(episode) == 1:
+                    episode = '0' + episode 
                 print (f"Marking [{title}] [{episode}] as watched")
                 r = subprocess.run([INSTALL_FOLDER + "movetowatched.pl", title, episode])
                 print ("Run result", r)

@@ -33,7 +33,7 @@ for (readdir($dir)) {
 
 	next unless $title   =~ /$show/i;
 	if ($episode !~ '-1') {
-		next unless $ep      =~ /$episode/;
+		next unless $ep =~ /$episode/;
 	}
 	unshift @filenames, $_;
 }
