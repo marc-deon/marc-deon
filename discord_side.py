@@ -75,7 +75,7 @@ async def get_and_process_history(channel_id=default_channel_id):
                 m.content = m.content.replace("!watch", "!watched")
             if m.content.startswith("!watched"):
                 print ("Watched detected")
-                regex = re.search(r"!watched(.*?)(.+)", m.content, re.IGNORECASE)
+                regex = re.search(r"!watched(.*) (.+)", m.content, re.IGNORECASE)
                 title = regex.group(1).strip()
                 episode = regex.group(2).strip()
                 if len(episode) == 1:
